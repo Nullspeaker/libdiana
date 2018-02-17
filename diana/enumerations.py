@@ -33,10 +33,11 @@ class Console(Enum):
     engineering = 3
     science = 4
     comms = 5
-    data = 6
-    observer = 7
-    captain_map = 8
-    game_master = 9
+    fighter = 6
+    data = 7
+    observer = 8
+    captain_map = 9
+    game_master = 10
 
 class ConsoleStatus(Enum):
     available = 0
@@ -47,17 +48,17 @@ class ObjectType(Enum):
     player_vessel = 1
     weapons_console = 2
     engineering_console = 3
-    other_ship = 4
-    base = 5
-    mine = 6
-    anomaly = 7
-    nebula = 9
-    torpedo = 10
-    blackhole = 11
-    asteroid = 12
-    mesh = 13
-    monster = 14
-    whale = 15
+    player_ship_upgrade = 4
+    other_ship = 5
+    base = 6
+    mine = 7
+    anomaly = 8
+    nebula = 10
+    torpedo = 11
+    blackhole = 12
+    asteroid = 13
+    mesh = 14
+    creature = 15
     drone = 16
 
 class DriveType(Enum):

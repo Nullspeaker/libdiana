@@ -76,20 +76,46 @@ DECODERS['S'] = struct_decoder_for('H')
 def decode_unicode_string(fmt, data, handle_trail):
     if len(data) < 4:
         raise ValueError('Truncated data')
+    #print("\t",":".join("{:02x}".format(c) for c in data[:4]))
     str_len_padded, = struct.unpack('<I', data[:4])
+    #print("\t str_len_padded: ",str_len_padded)
+    #print("\t str_len_padded 2: ",2147483648-str_len_padded)
+    #print("\t str_len_padded 2: ",str_len_padded)
+
+    #print("data:")
+    #for dc in chunks(data,8):
+    #    print(" ".join("{:02x}".format(c) for c in dc))
     if str_len_padded == 0:
-        raise ValueError('Zero-length string (no nul trailer?)')
+        raise ValueError('Zero-length string (no null trailer?)')
     data = data[4:]
+    #print('\t',"Len(data) =",len(data))
+	#if (str_len_padded == 
     if len(data) < (str_len_padded * 2):
+        #print("\t","Nyaaa~")
         raise ValueError('Truncated data')
     str_len = str_len_padded - 1
     str_data = data[:(str_len * 2)].decode('utf-16le')
     data = data[(str_len*2):]
     if data[0] != 0 or data[1] != 0:
-        raise ValueError('NUL trailer missing')
+        raise ValueError('null trailer missing')
     return (str_data,) + decode(fmt[1:], data[2:], handle_trail)
 DECODERS['u'] = decode_unicode_string
 
+#def decode_unicode_string_bad(fmt, data, handle_trail):
+#    if len(data) < 4:
+#        raise ValueError('Truncated data')
+#    data = data[4:] # kill length, it's a bad string
+#    str_data=""
+#    while True:
+#        str_data = str_data + data[:1].decode('utf-16le')
+#        print(str_data)
+#        data = data[1:]
+#        if data[0] == 0 and data[1] == 0: # null terminator found
+#            break # break
+#    # return string and tell to decode remaining bytes as remaining fmt
+#    return (total_str_data,) + decode(fmt[1:], data[2:], handle_trail)
+#DECODERS['U'] = decode_unicode_string_bad
+	
 def decode_array(fmt, data, handle_trail):
     stack_depth = 0
     for index, element in enumerate(fmt):
@@ -127,7 +153,16 @@ def handle_trail_error(trailer):
         return ()
     raise ValueError('Trailing bytes')
 
+def chunks(l, n): # i use this for debug xd
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
 def decode(fmt, data, handle_trail=handle_trail_error):
+    #print(DECODERS.keys())
+    #print("fmt:\n\t"," ".join("{:02x}".format(ord(c)) for c in fmt)," || ",fmt)
+    #print("data:")
+    #for dc in chunks(data,8):
+    #    print(" ".join("{:02x}".format(c) for c in dc))
     if fmt == '':
         return handle_trail(data)
     return DECODERS[fmt[0]](fmt, data, handle_trail)

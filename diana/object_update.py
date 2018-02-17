@@ -13,7 +13,7 @@ def decode_obj_update_packet(packet):
         if update_type == 0x00:
             break
         elif update_type == 0x01:
-            _id, oid, fields_1, fields_2, fields_3, fields_4, fields_5, packet = unpack('BIBBBBB*', packet)
+            _id, oid, fields_1, fields_2, fields_3, fields_4, fields_5, fields_6, packet = unpack('BIBBBBBB*', packet)
             obj['object'] = oid
             obj['type'] = ObjectType.player_vessel
             if fields_1 & 0x01:
@@ -33,10 +33,12 @@ def decode_obj_update_packet(packet):
                 obj['warp'], packet = unpack('B*', packet)
             if fields_1 & 0x80:
                 obj['energy'], packet = unpack('f*', packet)
+				
             if fields_2 & 0x01:
-                obj['shields-state'], packet = unpack('s*', packet)
+                obj['shields-state'], packet = unpack('S*', packet)
             if fields_2 & 0x02:
-                obj['index'], packet = unpack('I*', packet)
+                packet = packet[4:] #now unknown
+                #obj['index'], packet = unpack('I*', packet)
             if fields_2 & 0x04:
                 obj['vtype'], packet = unpack('I*', packet)
             if fields_2 & 0x08:
@@ -49,12 +51,13 @@ def decode_obj_update_packet(packet):
                 obj['pitch'], packet = unpack('f*', packet)
             if fields_2 & 0x80:
                 obj['roll'], packet = unpack('f*', packet)
+				
             if fields_3 & 0x01:
                 obj['heading'], packet = unpack('f*', packet)
             if fields_3 & 0x02:
                 obj['speed'], packet = unpack('f*', packet)
             if fields_3 & 0x04:
-                _unk, packet = unpack('S*', packet)
+                obj['in-a-nebula'], packet = unpack('S*', packet)
             if fields_3 & 0x08:
                 obj['name'], packet = unpack('u*', packet)
             if fields_3 & 0x10:
@@ -65,13 +68,14 @@ def decode_obj_update_packet(packet):
                 obj['shields-aft'], packet = unpack('f*', packet)
             if fields_3 & 0x80:
                 obj['shields-aft-max'], packet = unpack('f*', packet)
+				
             if fields_4 & 0x01:
                 obj['docked'], packet = unpack('I*', packet)
             if fields_4 & 0x02:
                 red_alert, packet = unpack('B*', packet)
                 obj['red-alert'] = bool(red_alert)
             if fields_4 & 0x04:
-                packet = packet[4:]
+                packet = packet[4:] # unknown
             if fields_4 & 0x08:
                 ms, packet = unpack('B*', packet)
                 obj['main-view'] = MainView(ms)
@@ -83,6 +87,7 @@ def decode_obj_update_packet(packet):
                 obj['tgt-science'], packet = unpack('I*', packet)
             if fields_4 & 0x80:
                 obj['tgt-captain'], packet = unpack('I*', packet)
+				
             if fields_5 & 0x01:
                 dt, packet = unpack('B*', packet)
                 obj['drive-type'] = DriveType(dt)
@@ -94,12 +99,29 @@ def decode_obj_update_packet(packet):
                 rv, packet = unpack('B*', packet)
                 obj['reverse'] = bool(rv)
             if fields_5 & 0x10:
-                packet = packet[4:]
+                packet = packet[4:] # float
             if fields_5 & 0x20:
                 packet = packet[1:]
             if fields_5 & 0x40:
-                packet = packet[4:]
+                packet = packet[4:] # int
             if fields_5 & 0x80:
+                obj['ship-index?'], packet = unpack('B*', packet)
+				
+            if fields_6 & 0x01:
+                obj['capital-ship-obj-id'], packet = unpack('I*', packet)
+            if fields_6 & 0x02:
+                obj['accent-colour'], packet = unpack('f*', packet)
+            if fields_6 & 0x04:
+                packet = packet[4:] # unknown
+            if fields_6 & 0x08:
+                obj['beacon-creature-type'], packet = unpack('I*', packet)
+            if fields_6 & 0x10:
+                obj['beacon-mode'], packet = unpack('B*', packet)
+            if fields_6 & 0x20:
+                raise ValueError('Unknown data keys for player vessel')
+            if fields_6 & 0x40:
+                raise ValueError('Unknown data keys for player vessel')
+            if fields_6 & 0x80:
                 raise ValueError('Unknown data keys for player vessel')
         elif update_type == 0x02:
             _id, oid, fields_1, fields_2, fields_3, packet = unpack('BIBBB*', packet)
@@ -187,6 +209,26 @@ def decode_obj_update_packet(packet):
                     if fields_heat & flag:
                         obj['{}-{}'.format(status, syst)], packet = unpack(fmt + '*', packet)
         elif update_type == 0x04:
+            _id, oid, fields, packet = unpack('BIB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.anomaly
+            if fields & 0x01:
+                obj['x'], packet = unpack('f*', packet)
+            if fields & 0x02:
+                obj['y'], packet = unpack('f*', packet)
+            if fields & 0x04:
+                obj['z'], packet = unpack('f*', packet)
+            if fields & 0x08:
+                obj['upgrade'], packet = unpack('I*', packet)
+            if fields & 0x10:
+                packet = packet[4:]
+            if fields & 0x20:
+                packet = packet[4:]
+            if fields & 0x40:
+                packet = packet[4:]
+            if fields & 0x80:
+                packet = packet[4:]
+        elif update_type == 0x05:
             _id, oid, fields_1, fields_2, fields_3, fields_4, fields_5, fields_6, packet = unpack('BIBBBBBB*', packet)
             obj['object'] = oid
             obj['type'] = ObjectType.other_ship
@@ -291,7 +333,7 @@ def decode_obj_update_packet(packet):
                 obj['shields-4'], packet = unpack('f*', packet)
             if fields_6 & 0x80:
                 raise ValueError('Unknown data key for NPC')
-        elif update_type == 0x05:
+        elif update_type == 0x06:
             _id, oid, fields_1, fields_2, packet = unpack('BIBB*', packet)
             obj['object'] = oid
             obj['type'] = ObjectType.base
@@ -325,7 +367,7 @@ def decode_obj_update_packet(packet):
                 packet = packet[1:]
             if fields_2 & 0xc0:
                 raise ValueError('Unknown data keys for base')
-        elif update_type == 0x06:
+        elif update_type == 0x07:
             _id, oid, fields, packet = unpack('BIB*', packet)
             obj['object'] = oid
             obj['type'] = ObjectType.mine
@@ -345,7 +387,7 @@ def decode_obj_update_packet(packet):
                 packet = packet[4:]
             if fields & 0x80:
                 packet = packet[4:]
-        elif update_type == 0x07:
+        elif update_type == 0x08:
             _id, oid, fields, packet = unpack('BIB*', packet)
             obj['object'] = oid
             obj['type'] = ObjectType.anomaly

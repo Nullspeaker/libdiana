@@ -156,11 +156,11 @@ class CommsIncomingPacket:
         self.message = message
 
     def encode(self):
-        return pack('Iuu', self.priority, self.sender, self.message.replace('\n', '^'))
+        return pack('Suu', self.priority, self.sender, self.message.replace('\n', '^'))
 
     @classmethod
     def decode(cls, packet):
-        prio, sender, message = unpack('Iuu', packet)
+        prio, sender, message = unpack('Suu', packet)
         return cls(prio, sender, message.replace('^', '\n'))
 
     def __str__(self):
@@ -291,9 +291,9 @@ class AllShipSettingsPacket(GameMessagePacket):
 
     @classmethod
     def decode(cls, packet):
-        _id, records = unpack('I[IIIu]', packet)
+        _id, records = unpack('I[IIfIu]', packet)
         return cls(ShipSettingsRecord(DriveType(drv), ShipType(typ), name)
-                      for drv, typ, _what, name in records)
+                      for drv, typ, _accent, _what, name in records)
 
     def __str__(self):
         return '<AllShipSettingsPacket settings={0!r}>'.format(self.ships)
