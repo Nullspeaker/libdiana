@@ -71,6 +71,31 @@ class ShipType(Enum):
     battleship = 2
     missile_cruiser = 3
     dreadnought = 4
+    carrier = 5
+    mine_layer = 6
+    juggernaut = 7
+    ximni_light_cruiser = 8
+    ximni_scout = 9
+    ximni_missile_cruiser = 10
+    ximni_battleship = 11
+    ximni_carrier = 12
+    ximni_dreadnought = 13
+    strongbow = 14
+    longbow = 15
+    brigantine = 16
+
+    tsn_medium_fighter = 100
+    tsn_bomber = 101
+    tsn_shuttle = 102
+    tsn_lr_shuttle = 103
+
+    zim_fighter = 120
+    zim_bomber = 121
+    zim_shuttle = 122
+    zim_lr_shuttle = 123
+
+    avenger = 130
+    adventure = 131
 
 ShipSettingsRecord = namedtuple('ShipSettingsRecord', 'drive type name')
 

@@ -821,17 +821,17 @@ class BeamFiredPacket:
         self.auto = auto
 
     def encode(self):
-        return pack('IIIIIIIIfffI',
-                    self.object, 0, 1200,
+        return pack('IIIIIIIIIfffI',
+                    self.object, 1, 1200,
                     self.port,
-                    1, 1,
+                    1, 1, 0,
                     self.origin, self.target,
                     self.x, self.y, self.z,
                     0 if self.auto else 1)
 
     @classmethod
     def decode(cls, packet):
-        object, _unk1, _unk2, port, _unk3, _unk4, origin, target, x, y, z, auto = unpack('IIIIIIIIfffI', packet)
+        object, _unk1, _unk2, port, origintype, targettype, _unk3, origin, target, x, y, z, auto = unpack('IIIIIIIIIfffI', packet)
         return cls(object, port, origin, target, x, y, z, [True, False][auto])
 
     def __str__(self):

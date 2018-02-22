@@ -159,10 +159,10 @@ def chunks(l, n): # i use this for debug xd
         yield l[i:i + n]
 def decode(fmt, data, handle_trail=handle_trail_error):
     #print(DECODERS.keys())
-    #print("fmt:\n\t"," ".join("{:02x}".format(ord(c)) for c in fmt)," || ",fmt)
-    #print("data:")
-    #for dc in chunks(data,8):
-    #    print(" ".join("{:02x}".format(c) for c in dc))
+    print("fmt:\n\t"," ".join("{:02x}".format(ord(c)) for c in fmt)," || ",fmt)
+    print("data:")
+    for dc in chunks(data,8):
+        print(" ".join("{:02x}".format(c) for c in dc))
     if fmt == '':
         return handle_trail(data)
     return DECODERS[fmt[0]](fmt, data, handle_trail)
