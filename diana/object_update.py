@@ -123,18 +123,18 @@ Object_Properties = {
 			"1.3" : ('z','f'),
 			"1.4" : ('red','f'),
 			"1.5" : ('green','f'),
-			"1.6" : ('blau','f'),
+			"1.6" : ('blue','f'),
 			"1.7" : ('unused?-1','I'),
 			"1.8" : ('unused?-2','I')
 			},
 		ObjectType.other_ship : { # NPC ship
 			"1.1" : ('name',			'u'), # im too indecisive to pick whether
 			"1.2" : ('throttle',		'f'), # i want any tab-alignment on this
-			"1.3" : ('rudder',		  'f'), # at all, or where when i do
-			"1.4" : ('max-impulse',	 'f'),
+			"1.3" : ('rudder',		  	'f'), # at all, or where when i do
+			"1.4" : ('max-impulse',	 	'f'),
 			"1.5" : ('max-turn-rate',   'f'), # NONE OF IT LOOKS RIGHT
-			"1.6" : ('enemy?',		  'I'),
-			"1.7" : ('vessel-type',	 'I'),
+			"1.6" : ('enemy?',		  	'I'),
+			"1.7" : ('vessel-type',	 	'I'),
 			"1.8" : ('x',	   'f'),
 
 			"2.1" : ('y',	   'f'), # i dont know why im even working on this library
