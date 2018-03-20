@@ -67,14 +67,14 @@ class ScienceAI:
 
         # print list of known objects
         if len(self.known_objects.keys()) > 0:
-            print("ScienceAI update:")
+            #print("ScienceAI update:")
             #print("\t%d objects known"%len(self.known_objects.keys()))
-            print("\t ObjID\t Info")
-            for k,v in self.known_objects.items():
-                print("\t",k,"\t",v)
+            #print("\t ObjID\t Info")
+            #for k,v in self.known_objects.items():
+            #    print("\t",k,"\t",v)
             print("\tSCANNING_STATE:\t",self.is_scanning())
             if(self.is_scanning()):
-                print("\tSCANNING_PROGRESS:\t",
+                print("\tSCAN_PROGRESS:\t",
                       "%d"%(100*(self._tracker.player_ship['scanning-progress']),) + "%"
                 )
         else:
@@ -90,12 +90,38 @@ class ScienceAI:
 
 
 if __name__ == "__main__":
+
+    import tkinter as tk
+
+    tk_root = tk.Tk()
+    tk_w = tk.Canvas(tk_root, width=800, height=600)
+    tk_w.pack()
+    
     SciAI = ScienceAI(tx,rx,tracker) # instantiate science AI instance
     tracker.bind_to_updates(SciAI.tracker_callback) # call this func on obj updates
     while True:
         for packet in rx: # stream packets from the server
             tracker.rx(packet) # Update the tracker with new information
+            tk_w.delete(tk.ALL) # clear canvas
+            for oid,odata in tracker.objects.items():
+                try:
+                    x = odata['x']/150
+                    z = odata['z']/150# - tracker.player_ship['z']
+                    #print("(%d,%d)"%(x,z))
+                    tk_w.create_rectangle(x,z,x+2,z+2,fill='blue')
+                except: pass
+            tk_root.update()
+
+
+            
+            #pp.pprint(packet)
             #pp.pprint(tracker.objects)
+            #print("")
+            #print("name\t enemy?\t side?")
+            for oid,odata in tracker.objects.items():
+                try:
+                    print(odata["name"],"\t",odata["enemy?"],"\t",odata["side?"])
+                except: pass
             #for k,v in tracker.player_ship.items():
             #    if k in ["science-target","scanning-id","scanning-progress"]:
             #        print(k,v)
